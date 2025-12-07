@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.bharatkrishi.app.data.local.PhotoDao
+import com.bharatkrishi.app.data.local.PhotoEntity
 
-
-@Database(entities = [MarketData::class], version = 1, exportSchema = false)
+@Database(entities = [MarketData::class, PhotoEntity::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun marketDao(): MarketDao
+    abstract fun photoDao(): PhotoDao
 
     companion object {
         // Volatile makes sure the value of INSTANCE is always up-to-date
@@ -23,7 +25,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database" // Name of the database file
-                ).build()
+                )
+                .fallbackToDestructiveMigration() // Handle version change
+                .build()
                 INSTANCE = instance
                 instance
             }

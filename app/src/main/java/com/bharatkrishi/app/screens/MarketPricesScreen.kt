@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -104,7 +105,13 @@ fun MarketPricesScreen(navController: NavController, marketViewModel: MarketView
                         }
                     }
                     is DataState.Error -> {
-                        Text("Error: ${currentState.message}", color = Color.Red)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(16.dp)) {
+                            Text("Error: ${currentState.message}", color = Color.Red, textAlign = TextAlign.Center)
+                            Spacer(Modifier.height(8.dp))
+                            Button(onClick = { marketViewModel.retry() }) {
+                                Text("Retry")
+                            }
+                        }
                     }
                     null -> {
                         // Initial empty state, you can put a prompt here

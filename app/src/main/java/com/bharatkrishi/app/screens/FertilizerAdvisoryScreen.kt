@@ -22,27 +22,43 @@ fun FertilizerAdvisoryScreen(navController: NavController) {
     val fertilizerRecommendations = listOf(
         FertilizerRecommendation(
             cropName = "Wheat",
-            stage = "Sowing Stage",
-            fertilizer = "DAP (Diammonium Phosphate)",
-            quantity = "100 kg/hectare",
-            timing = "At the time of sowing",
-            description = "Provides phosphorus for strong root development"
+            stage = "Sowing (Basal)",
+            fertilizer = "DAP + MOP",
+            quantity = "55kg DAP + 40kg MOP / acre",
+            timing = "At time of sowing",
+            description = "Provides essential Phosphorus and Potassium. Potassium helps resist Rust diseases."
         ),
         FertilizerRecommendation(
-            cropName = "Rice",
-            stage = "Vegetative Stage",
+            cropName = "Wheat",
+            stage = "CRI Stage (20-25 DAS)",
             fertilizer = "Urea",
-            quantity = "120 kg/hectare",
-            timing = "20-25 days after transplanting",
-            description = "Essential nitrogen for leaf growth"
+            quantity = "45-50 kg / acre",
+            timing = "With first irrigation",
+            description = "Crucial for tillering. Avoid excess Nitrogen to prevent Rust susceptibility."
         ),
         FertilizerRecommendation(
-            cropName = "Cotton",
-            stage = "Flowering Stage",
-            fertilizer = "Potash",
-            quantity = "60 kg/hectare",
-            timing = "During flower initiation",
-            description = "Improves fiber quality and yield"
+            cropName = "Wheat",
+            stage = "Jointing Stage (40-45 DAS)",
+            fertilizer = "Urea",
+            quantity = "45-50 kg / acre",
+            timing = "With second irrigation",
+            description = "Supports stem elongation. Balanced nutrition reduces Mildew risk."
+        ),
+        FertilizerRecommendation(
+            cropName = "Wheat",
+            stage = "Booting Stage",
+            fertilizer = "Zinc Sulphate (if deficiency)",
+            quantity = "10 kg / acre (soil application)",
+            timing = "If leaves show yellowing",
+            description = "Corrects Zinc deficiency. Healthy plants resist Septoria better."
+        ),
+        FertilizerRecommendation(
+            cropName = "Mustard",
+            stage = "Sowing",
+            fertilizer = "SSP + Urea",
+            quantity = "150kg SSP + 30kg Urea / acre",
+            timing = "Basal application",
+            description = "Sulphur in SSP is vital for oil content and disease resistance."
         )
     )
 

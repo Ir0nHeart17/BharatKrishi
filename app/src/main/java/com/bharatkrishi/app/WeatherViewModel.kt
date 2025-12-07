@@ -20,7 +20,7 @@ class WeatherViewModel : ViewModel() {
     fun getData(city: String) {
         _weatherResult.value = NetworkResponse.Loading
         viewModelScope.launch {
-            val response =weatherApi.getWeather(WeatherConstant.apiKey, city)
+            val response = weatherApi.getWeather(WeatherConstant.apiKey, city)
             try{
                 if(response.isSuccessful){
                     response.body()?.let{

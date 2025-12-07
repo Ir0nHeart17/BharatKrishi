@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -20,6 +21,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val geminiApiKey: String = "AIzaSyCkII1ca_wf-MX12I9hxYdJW6UvNrzljxw"
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
     // ⬇️⬇️ IMPORTANT FIX .onnx + .onnx.data are packaged ⬇️⬇️
@@ -51,6 +55,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {
@@ -105,4 +110,22 @@ dependencies {
 
     // ONNX Runtime
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.18.0")
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+
+    // Google Play Services
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
+
+    // AI
+    // AI - direct, guaranteed working
+    implementation(libs.generativeai)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
 }

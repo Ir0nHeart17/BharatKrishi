@@ -1,6 +1,5 @@
 package com.bharatkrishi.app
 
-
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -11,8 +10,6 @@ import com.bharatkrishi.app.network.AgriApiRecord
 import kotlinx.coroutines.launch
 import com.bharatkrishi.app.AppDatabase
 import com.bharatkrishi.app.MarketData
-
-
 
 // A simple sealed class to represent the state of the data loading process
 sealed class DataState {
@@ -48,6 +45,9 @@ class MarketViewModel(application: Application) : AndroidViewModel(application) 
         fetchMarketData() // Re-fetch data with the new filter
     }
 
+    fun retry() {
+        fetchMarketData()
+    }
 
     fun fetchMarketData() {
         viewModelScope.launch {
@@ -56,7 +56,6 @@ class MarketViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    // --- UPDATE THE `fetchFromApi` FUNCTION ---
     private suspend fun fetchFromApi() {
         try {
             // 1. Create a map for our filters.
@@ -84,10 +83,15 @@ class MarketViewModel(application: Application) : AndroidViewModel(application) 
             )
 
             val newData = mapApiResponseToMarketData(apiResponse.records)
-            _marketDataState.value = DataState.Success(newData)
+            if (newData.isEmpty()) {
+                 _marketDataState.value = DataState.Error("No data found for selected filters.")
+            } else {
+                _marketDataState.value = DataState.Success(newData)
+            }
 
         } catch (e: Exception) {
-            _marketDataState.value = DataState.Error("Network error: ${e.message}")
+            e.printStackTrace()
+            _marketDataState.value = DataState.Error("Network error: ${e.message}. Tap to retry.")
         }
     }
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "625734308476",
+    "project_id": "bharat-krishi-project",
+    "storage_bucket": "bharat-krishi-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:625734308476:android:04eff87baf538a68216ff9",
+        "android_client_info": {
+          "package_name": "com.bharatkrishi.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoQF98XZt7TzBxVZ3j_G22QfrwBfiqFDM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

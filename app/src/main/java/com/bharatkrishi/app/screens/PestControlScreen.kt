@@ -23,34 +23,40 @@ import androidx.navigation.NavController
 fun PestControlScreen(navController: NavController) {
     val pests = listOf(
         PestInfo(
-            name = "Aphids",
-            description = "Small insects that suck plant sap",
+            name = "Yellow Rust (Stripe Rust)",
+            description = "Yellow stripes on leaves. Affects photosynthesis. Use Propiconazole.",
             severity = "High",
             severityColor = Color(0xFFf44336)
         ),
         PestInfo(
-            name = "Whitefly",
-            description = "Causes yellowing of leaves",
-            severity = "Medium",
-            severityColor = Color(0xFFFF9800)
-        ),
-        PestInfo(
-            name = "Bollworm",
-            description = "Affects cotton crops severely",
+            name = "Brown Rust (Leaf Rust)",
+            description = "Orange-brown pustules on leaves. Spread by wind. Use Tebuconazole.",
             severity = "High",
             severityColor = Color(0xFFf44336)
         ),
         PestInfo(
-            name = "Stem Borer",
-            description = "Common in rice crops",
+            name = "Loose Smut",
+            description = "Black powdery mass replacing grain heads. Seed treatment with Carboxin is effective.",
             severity = "Medium",
             severityColor = Color(0xFFFF9800)
         ),
         PestInfo(
-            name = "Leaf Miner",
-            description = "Creates tunnels in leaves",
-            severity = "Low",
-            severityColor = Color(0xFF4CAF50)
+            name = "Septoria",
+            description = "Yellow spots on leaves with black dots. Causes leaf blotch. Use fungicides.",
+            severity = "Medium",
+            severityColor = Color(0xFFFF9800)
+        ),
+        PestInfo(
+            name = "Powdery Mildew",
+            description = "White powdery growth on leaves. Reduces yield. Use Sulphur-based fungicides.",
+            severity = "Medium",
+            severityColor = Color(0xFFFF9800)
+        ),
+        PestInfo(
+            name = "Stripe Rust",
+            description = "Similar to Yellow Rust. Causes significant yield loss in cool, moist conditions.",
+            severity = "High",
+            severityColor = Color(0xFFf44336)
         )
     )
 
@@ -60,7 +66,7 @@ fun PestControlScreen(navController: NavController) {
             .background(Color(0xFFF5F5F5))
     ) {
         TopAppBar(
-            title = { Text("Pest Control Guide", fontWeight = FontWeight.Bold) },
+            title = { Text("Wheat Disease Guide", fontWeight = FontWeight.Bold) },
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Back")
