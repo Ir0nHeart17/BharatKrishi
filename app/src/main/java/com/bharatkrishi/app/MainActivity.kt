@@ -13,13 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.bharatkrishi.app.screens.*
 import com.bharatkrishi.app.ui.theme.BharatKrishiTheme
 
-// --- MERGED AND CORRECTED MAIN ACTIVITY ---
+// MERGED AND CORRECTED MAIN ACTIVITY
 class MainActivity : ComponentActivity() {
 
     // 1. Get a reference to the ViewModel using the standard delegate for Compose activities
@@ -68,12 +70,13 @@ fun BharatKrishiApp(
     ) {
         composable("login") { LoginScreen(navController, authViewModel) }
         composable("signup") { SignupScreen(navController, authViewModel) }
-        
+        composable("profile_completion") { ProfileCompletionScreen(navController, authViewModel) }
         composable("home") { HomeScreen(navController, marketViewModel, weatherViewModel, authViewModel) }
         composable("notifications") { NotificationsScreen(navController) }
         // Example: Pass the ViewModel to the screen that will display the data
         composable("market_prices") { MarketPricesScreen(navController, marketViewModel) }
         composable("soil_info") { SoilInfoScreen(navController) }
+        composable("soil_health") { SoilStatusScreen(navController) }
         composable("ai_chat") { AIChatScreen(navController) }
         composable("weather_page") { WeatherForecastScreen(navController, weatherViewModel) }
         composable("fertilizer_advisory") { FertilizerAdvisoryScreen(navController) }
@@ -86,6 +89,25 @@ fun BharatKrishiApp(
             DroneAnalysisScreen(navController)
         }
         composable("community_forum") { CommunityForumScreen(navController) }
+        composable("crop_registration") { CropRegistrationScreen(navController) }
+        composable("disaster_report") { DisasterReportScreen(navController) }
+        composable("surveillance_map") { SurveillanceMapScreen(navController) }
 
+        composable(
+            route = "scheme_detail/{schemeTitle}/{schemeDescription}",
+            arguments = listOf(
+                navArgument("schemeTitle") { type = NavType.StringType },
+                navArgument("schemeDescription") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("schemeTitle")
+            val description = backStackEntry.arguments?.getString("schemeDescription")
+
+            SchemeDetailScreen(
+                navController = navController,
+                schemeTitle = title,
+                schemeDescription = description
+            )
+        }
     }
 }

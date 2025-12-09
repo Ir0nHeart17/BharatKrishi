@@ -2,23 +2,19 @@ package com.bharatkrishi.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Brand Colors
-val BharatKrishiGreen = Color(0xFF1B5E20) // Deep Green for high contrast
-val BharatKrishiLightGreen = Color(0xFF4CAF50) // Vibrant Green
-val BharatKrishiOrange = Color(0xFFFF6D00) // High visibility Orange
-val BharatKrishiYellow = Color(0xFFFFD600) // Warning/Highlight
+// USER PROVIDED CUSTOM PALETTE (Light Mode)
+val UserOrange = Color(0xFFFF6D1F) // Primary Accent
+val UserDarkText = Color(0xFF222222) // Primary Text
+val UserBeigeSecondary = Color(0xFFF5E7C6) // Secondary Background/Card
+val UserBeigeMain = Color(0xFFFAF3E1) // Main Background
 
-// Neutral Colors
-val LightBackground = Color(0xFFF5F5F5)
-val DarkBackground = Color(0xFF121212)
-val LightSurface = Color(0xFFFFFFFF)
-val DarkSurface = Color(0xFF1E1E1E)
+// DERIVED DARK MODE PALETTE (Matching "Warm/Greyish" Vibe)
+val DarkGreyBackground = Color(0xFF1A1A1A) // Deep Warm Grey (Not Pitch Black)
+val DarkSurfaceCard = Color(0xFF262626) // Slightly lighter for cards
+val DarkOrangeAccent = Color(0xFFFF6D1F) // Same Orange pop (or slightly lighter 0xFFFF8A50 if needed)
+val DarkTextMain = Color(0xFFE0E0E0) // Soft White
+val DarkTextSecondary = Color(0xFFAAAAAA) // Grey Text
 
-// Text Colors
-val LightOnBackground = Color(0xFF000000)
-val DarkOnBackground = Color(0xFFFFFFFF)
-val LightOnSurface = Color(0xFF000000)
-val DarkOnSurface = Color(0xFFFFFFFF)
-
-// Error
-val ErrorRed = Color(0xFFB00020)
+// Common
+val BharatKrishiGreen = Color(0xFF1B5E20) // Keeping legacy green ref just in case, but unused in main theme now
+val ErrorRed = Color(0xFFBA1A1A)

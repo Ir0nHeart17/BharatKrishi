@@ -17,66 +17,79 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bharatkrishi.app.utils.LocalizationManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PestControlScreen(navController: NavController) {
     val pests = listOf(
         PestInfo(
-            name = "Yellow Rust (Stripe Rust)",
-            description = "Yellow stripes on leaves. Affects photosynthesis. Use Propiconazole.",
-            severity = "High",
+            name = LocalizationManager.get("Yellow Rust (Stripe Rust)"),
+            description = LocalizationManager.get("Yellow stripes on leaves. Affects photosynthesis. Use Propiconazole."),
+            severity = LocalizationManager.get("High"),
             severityColor = Color(0xFFf44336)
         ),
         PestInfo(
-            name = "Brown Rust (Leaf Rust)",
-            description = "Orange-brown pustules on leaves. Spread by wind. Use Tebuconazole.",
-            severity = "High",
+            name = LocalizationManager.get("Brown Rust (Leaf Rust)"),
+            description = LocalizationManager.get("Orange-brown pustules on leaves. Spread by wind. Use Tebuconazole."),
+            severity = LocalizationManager.get("High"),
             severityColor = Color(0xFFf44336)
         ),
         PestInfo(
-            name = "Loose Smut",
-            description = "Black powdery mass replacing grain heads. Seed treatment with Carboxin is effective.",
-            severity = "Medium",
+            name = LocalizationManager.get("Loose Smut"),
+            description = LocalizationManager.get("Black powdery mass replacing grain heads. Seed treatment with Carboxin is effective."),
+            severity = LocalizationManager.get("Medium"),
             severityColor = Color(0xFFFF9800)
         ),
         PestInfo(
-            name = "Septoria",
-            description = "Yellow spots on leaves with black dots. Causes leaf blotch. Use fungicides.",
-            severity = "Medium",
+            name = LocalizationManager.get("Septoria"),
+            description = LocalizationManager.get("Yellow spots on leaves with black dots. Causes leaf blotch. Use fungicides."),
+            severity = LocalizationManager.get("Medium"),
             severityColor = Color(0xFFFF9800)
         ),
         PestInfo(
-            name = "Powdery Mildew",
-            description = "White powdery growth on leaves. Reduces yield. Use Sulphur-based fungicides.",
-            severity = "Medium",
+            name = LocalizationManager.get("Powdery Mildew"),
+            description = LocalizationManager.get("White powdery growth on leaves. Reduces yield. Use Sulphur-based fungicides."),
+            severity = LocalizationManager.get("Medium"),
             severityColor = Color(0xFFFF9800)
         ),
         PestInfo(
-            name = "Stripe Rust",
-            description = "Similar to Yellow Rust. Causes significant yield loss in cool, moist conditions.",
-            severity = "High",
+            name = LocalizationManager.get("Stripe Rust"),
+            description = LocalizationManager.get("Similar to Yellow Rust. Causes significant yield loss in cool, moist conditions."),
+            severity = LocalizationManager.get("High"),
             severityColor = Color(0xFFf44336)
         )
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        TopAppBar(
-            title = { Text("Wheat Disease Guide", fontWeight = FontWeight.Bold) },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-        )
-
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        LocalizationManager.get("Wheat Disease Guide"), 
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ) 
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(pests) { pest ->
@@ -90,7 +103,7 @@ fun PestControlScreen(navController: NavController) {
 fun PestCard(pest: PestInfo) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -109,17 +122,18 @@ fun PestCard(pest: PestInfo) {
                 Text(
                     pest.name,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     pest.description,
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             Text(
-                "${pest.severity} Risk",
+                "${pest.severity} ${LocalizationManager.get("Risk")}",
                 fontSize = 12.sp,
                 color = pest.severityColor,
                 fontWeight = FontWeight.Medium

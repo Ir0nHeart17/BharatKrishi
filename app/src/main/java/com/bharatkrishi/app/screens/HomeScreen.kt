@@ -3,10 +3,14 @@ package com.bharatkrishi.app.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -33,10 +38,10 @@ import com.bharatkrishi.app.R
 import com.bharatkrishi.app.WeatherViewModel
 import com.bharatkrishi.app.network.NetworkResponse
 import com.bharatkrishi.app.ui.theme.BharatKrishiGreen
-import com.bharatkrishi.app.ui.theme.BharatKrishiOrange
+import com.bharatkrishi.app.utils.LocalizationManager
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -58,17 +63,19 @@ fun HomeScreen(
     }
 
     val quickActions = listOf(
-        QuickAction(stringResource(R.string.soil_analysis), Icons.Default.Biotech, "soil_info"),
-        QuickAction(stringResource(R.string.ai_chat), Icons.Default.SmartToy, "ai_chat"),
-        QuickAction(stringResource(R.string.drone_analysis), Icons.Default.AirplanemodeActive, "drone_analysis"),
-        QuickAction(stringResource(R.string.community_forum), Icons.Default.People, "community_forum")
+        QuickAction(LocalizationManager.get("Wheat Detection"), Icons.Default.Biotech, "soil_info"),
+        QuickAction(LocalizationManager.get("AI Assistant"), Icons.Default.SmartToy, "ai_chat"),
+        QuickAction(LocalizationManager.get("Drone Analysis"), Icons.Default.AirplanemodeActive, "drone_analysis"),
+        QuickAction(LocalizationManager.get("Community Forum"), Icons.Default.People, "community_forum"),
+        QuickAction(LocalizationManager.get("Crop Verification"), Icons.Default.Verified, "crop_registration"),
+        QuickAction(LocalizationManager.get("Disaster Report"), Icons.Default.Warning, "disaster_report")
     )
 
     val govSchemes = listOf(
-        GovScheme("PM Kisan Samman Nidhi", "₹6000/year support"),
-        GovScheme("Fasal Bima Yojana", "Crop Insurance"),
-        GovScheme("Kisan Credit Card", "Low interest loans"),
-        GovScheme("Soil Health Card", "Soil testing scheme")
+        GovScheme("PM Kisan Samman Nidhi", "₹6000/year support", R.drawable.img_gov_scheme_1),
+        GovScheme("PM Kisan Scheme", "Crop Insurance", R.drawable.img_gov_scheme_2),
+        GovScheme("Central Gov Schemes", "Low interest loans", R.drawable.img_gov_scheme_3),
+        GovScheme("Soil Health Card", "Soil testing scheme", R.drawable.img_gov_scheme_3)
     )
 
     ModalNavigationDrawer(
@@ -76,7 +83,7 @@ fun HomeScreen(
         drawerContent = {
             ModalDrawerSheet {
                 Spacer(modifier = Modifier.height(16.dp))
-                // User Profile Header in Drawer
+                // .. profile summary
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,15 +110,42 @@ fun HomeScreen(
                 }
                 
                 Divider()
+
+                // Language Toggle
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = if (LocalizationManager.isHindi) "हिन्दी" else "English",
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Switch(
+                        checked = LocalizationManager.isHindi,
+                        onCheckedChange = { LocalizationManager.isHindi = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.primary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    )
+                }
+
+                Divider()
                 
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.home)) },
+                    label = { Text(LocalizationManager.get("Home")) },
                     selected = true,
                     onClick = { scope.launch { drawerState.close() } },
                     icon = { Icon(Icons.Default.Home, null) }
                 )
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.pest_control)) },
+                    label = { Text(LocalizationManager.get("Pest Control")) },
                     selected = false,
                     onClick = { 
                         scope.launch { drawerState.close() }
@@ -120,7 +154,7 @@ fun HomeScreen(
                     icon = { Icon(Icons.Default.BugReport, null) }
                 )
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.fertilizer_advisory)) },
+                    label = { Text(LocalizationManager.get("Fertilizer Advisory")) },
                     selected = false,
                     onClick = { 
                         scope.launch { drawerState.close() }
@@ -129,16 +163,26 @@ fun HomeScreen(
                     icon = { Icon(Icons.Default.Grass, null) }
                 )
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.gps_location)) },
+                    label = { Text(LocalizationManager.get("GPS Location")) },
                     selected = false,
                     onClick = { /* TODO: Toggle GPS */ },
                     icon = { Icon(Icons.Default.LocationOn, null) }
+                )
+                NavigationDrawerItem(
+                    label = { Text(LocalizationManager.get("Help & Support")) },
+                    selected = false,
+                    onClick = { 
+                        scope.launch { drawerState.close() }
+                        // Navigate to Help screen - ensure route exists or create it
+                        navController.navigate("help_support")
+                    },
+                    icon = { Icon(Icons.Default.Help, null) }
                 )
                 
                 Spacer(modifier = Modifier.weight(1f))
                 
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.logout)) },
+                    label = { Text(LocalizationManager.get("Logout")) },
                     selected = false,
                     onClick = {
                         authViewModel.logout()
@@ -154,25 +198,30 @@ fun HomeScreen(
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
+                CenterAlignedTopAppBar(
                     title = {
                         Text(
                             stringResource(R.string.app_name),
                             fontWeight = FontWeight.Bold,
-                            color = BharatKrishiGreen
+                            color = MaterialTheme.colorScheme.primary
                         )
                     },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = MaterialTheme.colorScheme.onSurface)
                         }
                     },
                     actions = {
                         IconButton(onClick = { navController.navigate("notifications") }) {
-                            Icon(Icons.Default.Notifications, contentDescription = "Notifications")
+                            // Badge logic could go here
+                            Icon(Icons.Default.Notifications, contentDescription = "Alerts", tint = MaterialTheme.colorScheme.onSurface)
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 )
             },
             bottomBar = {
@@ -184,48 +233,61 @@ fun HomeScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .background(Color(0xFFF5F5F5))
+                    .background(MaterialTheme.colorScheme.background)
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
 
-                // WELCOME CARD
+                // .. welcome card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = BharatKrishiGreen)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Text(
-                            stringResource(R.string.welcome_farmer),
-                            color = Color.White,
+                            LocalizationManager.get("Good Morning, Farmer"),
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
                             username,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
-                
-                // GOV SCHEMES
+
+                // .. gov schemes
                 Text(
-                    stringResource(R.string.gov_schemes),
+                    LocalizationManager.get("Govt Schemes"),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(govSchemes) { scheme ->
-                        GovSchemeCard(scheme)
+
+                // .. auto scroll
+                val pagerState = rememberPagerState(pageCount = { govSchemes.size })
+                
+                LaunchedEffect(Unit) {
+                    while (true) {
+                        delay(3000)
+                        val nextPage = (pagerState.currentPage + 1) % govSchemes.size
+                        pagerState.animateScrollToPage(nextPage)
                     }
                 }
+                
+                HorizontalPager(
+                    state = pagerState,
+                    contentPadding = PaddingValues(horizontal = 0.dp),
+                    pageSpacing = 16.dp, 
+                    modifier = Modifier.fillMaxWidth().height(150.dp)
+                ) { page ->
+                    GovSchemeCard(govSchemes[page], Modifier.fillMaxWidth())
+                }
 
-                // MARKET PRICE PREVIEW
+                // .. market prices
                 Box(
                     modifier = Modifier.clickable {
                         navController.navigate("market_prices")
@@ -234,7 +296,7 @@ fun HomeScreen(
                     MarketPricePreview(marketViewModel)
                 }
 
-                // WEATHER BLOCK
+                // .. weather info
                 when (val result = weatherResult) {
                     is NetworkResponse.Success -> {
                         WeatherAlertCard(
@@ -246,29 +308,29 @@ fun HomeScreen(
                     is NetworkResponse.Loading -> {
                         WeatherAlertCard(
                             temperature = "--°C",
-                            description = "Loading...",
+                            description = LocalizationManager.get("Loading..."),
                             onClick = {}
                         )
                     }
                     is NetworkResponse.Error -> {
                         WeatherAlertCard(
                             temperature = "!",
-                            description = "Error",
+                            description = LocalizationManager.get("Error"),
                             onClick = { weatherViewModel.getData("Delhi") }
                         )
                     }
                     null -> {
                         WeatherAlertCard(
                             temperature = "--°C",
-                            description = "Fetching...",
+                            description = LocalizationManager.get("Fetching..."),
                             onClick = {}
                         )
                     }
                 }
 
-                // QUICK ACTIONS
+                // .. quick actions
                 Text(
-                    "Quick Actions",
+                    LocalizationManager.get("Quick Actions"),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )
@@ -280,74 +342,70 @@ fun HomeScreen(
 }
 
 @Composable
-fun GovSchemeCard(scheme: GovScheme) {
+fun GovSchemeCard(scheme: GovScheme, modifier: Modifier = Modifier) {
     Card(
-        modifier = Modifier
-            .width(200.dp)
-            .height(100.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize()
         ) {
-            Text(
-                text = scheme.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                color = BharatKrishiGreen,
-                maxLines = 2
+            Image(
+                painter = painterResource(id = scheme.imageRes),
+                contentDescription = scheme.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.6f)
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = scheme.benefit,
-                fontSize = 12.sp,
-                color = Color.Gray
-            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.4f)
+                    .padding(4.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = scheme.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1
+                )
+                Text(
+                    text = scheme.benefit,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1
+                )
+            }
         }
     }
 }
 
-data class GovScheme(val name: String, val benefit: String)
+data class GovScheme(val name: String, val benefit: String, val imageRes: Int)
 
-// ... (Keep existing QuickActionsGrid, QuickActionCard, WeatherAlertCard, BottomNavigationBar, data classes)
-// I will append the rest of the file content here to ensure nothing is lost.
+
 
 @Composable
 fun QuickActionsGrid(navController: NavController, quickActions: List<QuickAction>) {
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        // Row 1
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (quickActions.isNotEmpty()) {
-                QuickActionCard(quickActions[0], Modifier.weight(1f)) {
-                    navController.navigate(quickActions[0].route)
+        quickActions.chunked(2).forEach { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                rowItems.forEach { action ->
+                    QuickActionCard(action, Modifier.weight(1f)) {
+                        navController.navigate(action.route)
+                    }
                 }
-            }
-            if (quickActions.size > 1) {
-                QuickActionCard(quickActions[1], Modifier.weight(1f)) {
-                    navController.navigate(quickActions[1].route)
-                }
-            }
-        }
-        // Row 2
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (quickActions.size > 2) {
-                QuickActionCard(quickActions[2], Modifier.weight(1f)) {
-                    navController.navigate(quickActions[2].route)
-                }
-            }
-            if (quickActions.size > 3) {
-                QuickActionCard(quickActions[3], Modifier.weight(1f)) {
-                    navController.navigate(quickActions[3].route)
+                if (rowItems.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -360,7 +418,7 @@ fun QuickActionCard(action: QuickAction, modifier: Modifier = Modifier, onClick:
         modifier = modifier
             .height(100.dp)
             .clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -368,9 +426,16 @@ fun QuickActionCard(action: QuickAction, modifier: Modifier = Modifier, onClick:
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(action.icon, contentDescription = action.title, tint = BharatKrishiGreen)
+            // Icon color matches the theme
+            Icon(action.icon, contentDescription = action.title, tint = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(action.title, fontSize = 12.sp, fontWeight = FontWeight.Medium, maxLines = 1)
+            Text(
+                action.title, 
+                fontSize = 12.sp, 
+                fontWeight = FontWeight.Medium, 
+                maxLines = 1,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -379,49 +444,29 @@ fun QuickActionCard(action: QuickAction, modifier: Modifier = Modifier, onClick:
 fun WeatherAlertCard(temperature: String, description: String, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick() },
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(Icons.Default.Cloud, contentDescription = null, tint = Color(0xFF1976D2))
+            Icon(Icons.Default.Cloud, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(stringResource(R.string.weather_alert), fontWeight = FontWeight.Medium)
-                Text("$temperature • $description", color = Color(0xFF1976D2))
+                Text(LocalizationManager.get("Weather Alert"), fontWeight = FontWeight.Medium)
+                Text("$temperature • $description", color = MaterialTheme.colorScheme.primary)
             }
             Spacer(modifier = Modifier.weight(1f))
-            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color(0xFF1976D2))
+            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         }
     }
 }
 
-@Composable
-fun BottomNavigationBar(navController: NavController) {
-    NavigationBar(containerColor = Color.White) {
-        val items = listOf(
-            BottomNavItem(stringResource(R.string.home), Icons.Default.Home, "home"),
-            BottomNavItem(stringResource(R.string.crop_advisory), Icons.Default.Agriculture, "crop_advisory"),
-            BottomNavItem(stringResource(R.string.help), Icons.Default.Help, "help_support"),
-            BottomNavItem(stringResource(R.string.profile), Icons.Default.Person, "profile")
-        )
+// Navigation bar logic is in a separate file
 
-        items.forEach { item ->
-            NavigationBarItem(
-                icon = { Icon(item.icon, contentDescription = item.title) },
-                label = { Text(item.title, fontSize = 10.sp) },
-                selected = item.route == "home",
-                onClick = { navController.navigate(item.route) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = BharatKrishiGreen,
-                    selectedTextColor = BharatKrishiGreen,
-                    indicatorColor = BharatKrishiGreen.copy(alpha = 0.1f)
-                )
-            )
-        }
-    }
-}
+data class QuickAction(
+    val title: String,
+    val icon: ImageVector,
+    val route: String
+)
 
-data class QuickAction(val title: String, val icon: ImageVector, val route: String)
-data class BottomNavItem(val title: String, val icon: ImageVector, val route: String)

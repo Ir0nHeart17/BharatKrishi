@@ -6,33 +6,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BharatKrishiLightGreen,
-    onPrimary = Color.Black,
-    secondary = BharatKrishiOrange,
-    onSecondary = Color.Black,
-    tertiary = BharatKrishiYellow,
-    onTertiary = Color.Black,
-    background = DarkBackground,
-    onBackground = DarkOnBackground,
-    surface = DarkSurface,
-    onSurface = DarkOnSurface,
-    error = ErrorRed,
-    onError = Color.White
+    primary = DarkOrangeAccent,
+    onPrimary = Color.Black, // Text on Orange
+    secondary = DarkSurfaceCard, // Cards
+    onSecondary = DarkTextMain,
+    tertiary = DarkOrangeAccent,
+    background = DarkGreyBackground,
+    onBackground = DarkTextMain,
+    surface = DarkSurfaceCard,
+    onSurface = DarkTextMain,
+    surfaceVariant = Color(0xFF333333),
+    onSurfaceVariant = DarkTextSecondary,
+    error = ErrorRed
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = BharatKrishiGreen,
+    primary = UserOrange,
     onPrimary = Color.White,
-    secondary = BharatKrishiOrange,
-    onSecondary = Color.White,
-    tertiary = BharatKrishiYellow,
-    onTertiary = Color.Black,
-    background = LightBackground,
-    onBackground = LightOnBackground,
-    surface = LightSurface,
-    onSurface = LightOnSurface,
-    error = ErrorRed,
-    onError = Color.White
+    secondary = UserBeigeSecondary, // Cards/Secondary elements
+    onSecondary = UserDarkText,
+    tertiary = UserOrange,
+    background = UserBeigeMain, // Main Background
+    onBackground = UserDarkText,
+
+    surface = Color.White, // Keeping cards white for crispness against the beige background
+    onSurface = UserDarkText,
+    surfaceVariant = UserBeigeSecondary, // Used for distinct cards
+    onSurfaceVariant = UserDarkText,
+    error = ErrorRed
 )
 
 @Composable

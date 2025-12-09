@@ -17,41 +17,53 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bharatkrishi.app.utils.LocalizationManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HelpSupportScreen(navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        TopAppBar(
-            title = { Text("Help & Support", fontWeight = FontWeight.Bold) },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-        )
-
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        LocalizationManager.get("Help & Support"), 
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ) 
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
         Column(
             modifier = Modifier
+                .padding(innerPadding)
                 .padding(20.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             SupportCard(
-                title = "Call Support",
-                description = "Get instant help from our support team",
+                title = LocalizationManager.get("Call Support"),
+                description = LocalizationManager.get("Get instant help from our support team"),
                 icon = Icons.Default.Phone,
                 color = Color(0xFF4CAF50)
             )
 
             SupportCard(
-                title = "Email Support",
-                description = "Send us your queries at support@krishi.com",
+                title = LocalizationManager.get("Email Support"),
+                description = LocalizationManager.get("Send us your queries at support@krishi.com"),
                 icon = Icons.Default.Email,
                 color = Color(0xFF2196F3)
             )
@@ -68,7 +80,7 @@ fun SupportCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) // Surface color
     ) {
         Row(
             modifier = Modifier
@@ -89,8 +101,8 @@ fun SupportCard(
             Spacer(modifier = Modifier.width(16.dp))
 
             Column {
-                Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(description, color = Color.Gray, fontSize = 14.sp)
+                Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(description, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
             }
         }
     }

@@ -22,7 +22,7 @@ android {
             useSupportLibrary = true
         }
 
-        val geminiApiKey: String = "AIzaSyCkII1ca_wf-MX12I9hxYdJW6UvNrzljxw"
+        val geminiApiKey: String = "AIzaSyAn9CqsNQol-SgAwHCbAv9gvJ2G03u9zvc"
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
@@ -89,6 +89,7 @@ dependencies {
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.10.1")
 
     // OkHttp Logging
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")

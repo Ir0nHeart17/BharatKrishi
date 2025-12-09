@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.bharatkrishi.app.utils.GPSLocationManager
+import com.bharatkrishi.app.utils.LocalizationManager
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
@@ -44,10 +45,10 @@ import kotlinx.coroutines.launch
 import java.nio.FloatBuffer
 import kotlin.math.roundToInt
 
-// ---------- LABELS & CONSTANTS ----------
+// LABELS & CONSTANTS
 private val DRONE_CLASS_LABELS = arrayOf(
     "Healthy", "Yellow rust", "Brown rust", "Loose Smut",
-    "Unknown", "Septoria", "Stripe rust", "Mildew"
+    "This is not a wheat crop", "Septoria", "Stripe rust", "Mildew"
 )
 
 private const val PATCH_SIZE = 256
@@ -77,7 +78,7 @@ data class DroneAnalysisSummary(
 
 enum class DroneLayer { DISEASE_HEATMAP, NDVI_LAYER }
 
-// ---------- MAIN SCREEN ----------
+// MAIN SCREEN
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DroneAnalysisScreen(navController: NavController) {
@@ -120,7 +121,7 @@ fun DroneAnalysisScreen(navController: NavController) {
         )
     }
 
-    // LOAD ONNX MODEL -----------------
+    // LOAD ONNX MODEL
     LaunchedEffect(Unit) {
         scope.launch(Dispatchers.IO) {
             try {
@@ -134,7 +135,7 @@ fun DroneAnalysisScreen(navController: NavController) {
         }
     }
 
-    // GALLERY PICKER -------------------
+    // GALLERY PICKER
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
@@ -174,24 +175,35 @@ fun DroneAnalysisScreen(navController: NavController) {
         }
     }
 
-    // UI -------------------------
+    // UI
     val scroll = rememberScrollState()
     val bg = MaterialTheme.colorScheme.background
     val surface = MaterialTheme.colorScheme.surface
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Drone Field Analysis", fontWeight = FontWeight.Bold) },
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        LocalizationManager.get("Drone Field Analysis"), 
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ) 
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = surface)
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
         },
-        containerColor = bg
+        bottomBar = {
+            BottomNavigationBar(navController)
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
 
         Column(
@@ -203,20 +215,20 @@ fun DroneAnalysisScreen(navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // ---------- HERO CARD ----------
+            // HERO CARD
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = surface),
                 shape = RoundedCornerShape(18.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Analyze Entire Fields", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    Text("Upload a drone image to generate a full-field disease map.",
-                        color = Color.Gray, fontSize = 14.sp)
+                    Text(LocalizationManager.get("Analyze Entire Fields"), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(LocalizationManager.get("Upload a drone image to generate a full-field disease map."),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
                 }
             }
 
-            // ---------- UPLOAD CARD ----------
+            // UPLOAD CARD
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = surface),
@@ -228,7 +240,7 @@ fun DroneAnalysisScreen(navController: NavController) {
                         Icon(Icons.Default.CloudUpload, contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary)
                         Spacer(Modifier.width(12.dp))
-                        Text("Upload Drone Image", fontWeight = FontWeight.Bold)
+                        Text(LocalizationManager.get("Upload Drone Image"), fontWeight = FontWeight.Bold)
                     }
 
                     Spacer(Modifier.height(12.dp))
@@ -238,23 +250,23 @@ fun DroneAnalysisScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Select Image")
+                        Text(LocalizationManager.get("Select Image"))
                     }
 
                     modelError?.let {
                         Spacer(Modifier.height(8.dp))
-                        Text(it, color = Color.Red, fontSize = 12.sp)
+                        Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp)
                     }
 
                     selectedBitmap?.let { bmp ->
                         Spacer(Modifier.height(10.dp))
-                        Text("Preview:", fontWeight = FontWeight.SemiBold)
+                        Text(LocalizationManager.get("Preview:"), fontWeight = FontWeight.SemiBold)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(180.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color.LightGray.copy(alpha = 0.3f)),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             contentAlignment = Alignment.Center
                         ) {
                             Image(bmp.asImageBitmap(), contentDescription = null)
@@ -266,13 +278,13 @@ fun DroneAnalysisScreen(navController: NavController) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(modifier = Modifier.size(20.dp))
                             Spacer(Modifier.width(8.dp))
-                            Text("Analyzing field…", fontSize = 12.sp)
+                            Text(LocalizationManager.get("Analyzing field…"), fontSize = 12.sp)
                         }
                     }
                 }
             }
 
-            // ---------- SHOW RESULTS IF AVAILABLE ----------
+            // SHOW RESULTS IF AVAILABLE
             if (summary != null && patchResults.isNotEmpty()) {
 
                 val s = summary!!
@@ -282,50 +294,50 @@ fun DroneAnalysisScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Layers", fontWeight = FontWeight.Bold)
+                    Text(LocalizationManager.get("Layers"), fontWeight = FontWeight.Bold)
 
                     Row {
                         FilterChip(
                             selected = selectedLayer == DroneLayer.DISEASE_HEATMAP,
                             onClick = { selectedLayer = DroneLayer.DISEASE_HEATMAP },
-                            label = { Text("Disease Heatmap") }
+                            label = { Text(LocalizationManager.get("Disease Heatmap")) }
                         )
                         Spacer(Modifier.width(8.dp))
                         FilterChip(
                             selected = selectedLayer == DroneLayer.NDVI_LAYER,
                             onClick = { selectedLayer = DroneLayer.NDVI_LAYER },
-                            label = { Text("NDVI Map") }
+                            label = { Text(LocalizationManager.get("NDVI Map")) }
                         )
                     }
                 }
-                // ---------- SUMMARY CARDS ----------
+                // SUMMARY CARDS
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     DroneMetricCard(
-                        title = "Field Health",
-                        primaryText = "${s.healthyPercent.roundToInt()}% Healthy",
-                        secondaryText = "${s.diseasedPercent.roundToInt()}% Diseased",
-                        accentColor = Color(0xFF2E7D32),
+                        title = LocalizationManager.get("Field Health"),
+                        primaryText = "${s.healthyPercent.roundToInt()}% ${LocalizationManager.get("Healthy")}",
+                        secondaryText = "${s.diseasedPercent.roundToInt()}% ${LocalizationManager.get("Diseased")}",
+                        accentColor = Color(0xFF4CAF50), // Semantic Green
                         icon = Icons.Default.Poll,
                         modifier = Modifier.weight(1f)
                     )
 
                     DroneMetricCard(
-                        title = "Patches Analyzed",
+                        title = LocalizationManager.get("Patches Analyzed"),
                         primaryText = "${s.totalPatches}",
-                        secondaryText = "${s.classHistogram.keys.size} classes detected",
+                        secondaryText = "${s.classHistogram.keys.size} classes detected", // Partial localization
                         accentColor = MaterialTheme.colorScheme.primary,
                         icon = Icons.Default.GridView,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
-                // ---------- CLASS HISTOGRAM ----------
+                // CLASS HISTOGRAM
                 DroneClassBreakdownCard(s)
 
-                // ---------- SELECTED LAYER ----------
+                // SELECTED LAYER
                 when (selectedLayer) {
                     DroneLayer.DISEASE_HEATMAP -> DroneHeatmapCard(patchResults)
                     DroneLayer.NDVI_LAYER -> NdviMapCard(userLocation)
@@ -342,28 +354,20 @@ fun DroneAnalysisScreen(navController: NavController) {
                     onClick = {
                         scope.launch {
                             isSaving = true
-                            saveMessage = "Uploading..."
-                            val uri = galleryLauncher.toString() // This is wrong, we need the URI from the result
-                            // Actually we don't have the URI persisted here easily unless we store it.
-                            // For prototype, let's skip image upload or use a dummy URL if we can't get it easily without refactoring.
-                            // Or better, we can upload the bitmap directly if we convert it.
-                            // Let's just save the metadata for now or try to upload if we have the URI.
-                            // Wait, `galleryLauncher` callback gave us the URI. We didn't store it in a state.
-                            // I should update the launcher to store the URI.
-                            
-                            // For now, let's just simulate save or save without image URL if URI is missing.
-                            // I'll add a TODO or try to fix it.
-                            // I'll assume we can save the stats.
+                            saveMessage = LocalizationManager.get("Uploading...")
+                            val uri = galleryLauncher.toString()
                             
                             try {
                                 firebaseManager.saveDetection(
-                                    userId = "test_user", // Replace with actual user ID
+                                    userId = "test_user", 
                                     diseaseName = "Field Analysis",
                                     confidence = s.diseasedPercent,
-                                    imageUrl = "", // TODO: Upload image
-                                    location = "${userLocation?.latitude},${userLocation?.longitude}"
+                                    imageUrl = "", 
+                                    latitude = userLocation?.latitude ?: 0.0,
+                                    longitude = userLocation?.longitude ?: 0.0,
+                                    locationName = "Drone Field Scan"
                                 )
-                                saveMessage = "Saved to Cloud!"
+                                saveMessage = LocalizationManager.get("Saved to Cloud!")
                             } catch (e: Exception) {
                                 saveMessage = "Error: ${e.message}"
                             } finally {
@@ -377,16 +381,16 @@ fun DroneAnalysisScreen(navController: NavController) {
                     if (isSaving) {
                         CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text("Saving...")
+                        Text(LocalizationManager.get("Saving..."))
                     } else {
                         Icon(Icons.Default.CloudUpload, null)
                         Spacer(Modifier.width(8.dp))
-                        Text("Save Results to Cloud")
+                        Text(LocalizationManager.get("Save Results to Cloud"))
                     }
                 }
                 
                 saveMessage?.let {
-                    Text(it, color = if (it.contains("Error")) Color.Red else Color(0xFF2E7D32), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    Text(it, color = if (it.contains("Error")) MaterialTheme.colorScheme.error else Color(0xFF4CAF50), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 }
             }
         }
@@ -467,7 +471,7 @@ private fun DroneClassBreakdownCard(summary: DroneAnalysisSummary) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.Poll, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.width(8.dp))
-                Text("8-Class Breakdown", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(LocalizationManager.get("8-Class Breakdown"), fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
 
             Spacer(Modifier.height(12.dp))
@@ -479,7 +483,7 @@ private fun DroneClassBreakdownCard(summary: DroneAnalysisSummary) {
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(label, modifier = Modifier.weight(1f), fontSize = 13.sp)
+                    Text(LocalizationManager.get(label), modifier = Modifier.weight(1f), fontSize = 13.sp)
 
                     LinearProgressIndicator(
                         progress = percent / 100f,
@@ -490,7 +494,7 @@ private fun DroneClassBreakdownCard(summary: DroneAnalysisSummary) {
                     )
 
                     Spacer(Modifier.width(8.dp))
-                    Text("${percent.roundToInt()}%", fontSize = 11.sp, color = Color.Gray)
+                    Text("${percent.roundToInt()}%", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
 
                 Spacer(Modifier.height(8.dp))
@@ -517,7 +521,7 @@ private fun DroneHeatmapCard(patchResults: List<PatchResult>) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.GridView, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.width(8.dp))
-                Text("Disease Heatmap", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(LocalizationManager.get("Disease Heatmap"), fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
 
             Box(
@@ -556,9 +560,9 @@ private fun DroneHeatmapCard(patchResults: List<PatchResult>) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                HeatmapLegendDot(Color(0xFF2E7D32), "Healthy")
-                HeatmapLegendDot(Color(0xFFD32F2F), "Diseased")
-                HeatmapLegendDot(Color(0xFF9E9E9E), "Unknown")
+                HeatmapLegendDot(Color(0xFF2E7D32), LocalizationManager.get("Healthy"))
+                HeatmapLegendDot(Color(0xFFD32F2F), LocalizationManager.get("Diseased"))
+                HeatmapLegendDot(Color(0xFF9E9E9E), LocalizationManager.get("This is not a wheat crop"))
             }
         }
     }
@@ -587,9 +591,9 @@ private fun NdviMapCard(userLocation: LatLng?) {
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Map, contentDescription = null, tint = Color(0xFFFFA000))
+                Icon(Icons.Default.Map, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                 Spacer(Modifier.width(8.dp))
-                Text("NDVI Map (Prototype)", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(LocalizationManager.get("NDVI Map (Prototype)"), fontWeight = FontWeight.Bold, fontSize = 16.sp)
             }
 
             if (userLocation != null) {
@@ -609,8 +613,8 @@ private fun NdviMapCard(userLocation: LatLng?) {
                     ) {
                         Marker(
                             state = MarkerState(position = userLocation),
-                            title = "Your Field",
-                            snippet = "NDVI Analysis Area"
+                            title = LocalizationManager.get("Your Field"),
+                            snippet = LocalizationManager.get("NDVI Analysis Area")
                         )
                         
                         // Prototype NDVI Overlay (Circle)
@@ -625,7 +629,7 @@ private fun NdviMapCard(userLocation: LatLng?) {
                 }
             } else {
                 Text(
-                    "Waiting for GPS location...",
+                    LocalizationManager.get("Waiting for GPS location..."),
                     fontSize = 13.sp,
                     color = Color.Gray
                 )
@@ -681,7 +685,7 @@ private fun analyzeDroneImage(bitmap: Bitmap, session: OrtSession, env: OrtEnvir
                     row = r,
                     col = c,
                     classIndex = cls,
-                    label = DRONE_CLASS_LABELS.getOrNull(cls) ?: "Unknown",
+                    label = DRONE_CLASS_LABELS.getOrNull(cls) ?: "This is not a wheat crop",
                     confidence = conf,
                     severity = mapIndexToSeverity(cls)
                 )

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BharatKrishi Surveillance</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+            z-index: 1;
+        }
+
+        .dashboard-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 300px;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            color: #1a5e1a;
+            font-size: 24px;
+        }
+
+        .stat-box {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .legend {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .dot-red {
+            background: #ff4444;
+        }
+
+        .dot-green {
+            background: #00C851;
+        }
+
+        .dot-yellow {
+            background: #ffbb33;
+        }
+
+        .btn {
+            background: #1a5e1a;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #144a14;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-overlay">
+        <h1>🌱 BharatKrishi</h1>
+        <p style="color: #666; margin-top: -5px; font-size: 13px;">Government Integrated Surveillance</p>
+
+        <div class="stat-box">
+            <span>Active Alerts:</span>
+            <span style="font-weight: bold; color: #ff4444;" id="alert-count">Loading...</span>
+        </div>
+        <div class="stat-box">
+            <span>Total Scans:</span>
+            <span style="font-weight: bold;" id="scan-count">Loading...</span>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="dot dot-red"></div>Critical Disease (Rust/Blight)
+            </div>
+            <div class="legend-item">
+                <div class="dot dot-yellow"></div>Potential Risk
+            </div>
+            <div class="legend-item">
+                <div class="dot dot-green"></div>Healthy Crop
+            </div>
+        </div>
+
+        <button class="btn" onclick="refreshData()">Sync Live Data</button>
+        <button class="btn" onclick="clearFirebaseData()" style="background: #ff4444; margin-top: 5px;">Clear
+            History</button>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Firebase JS SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>

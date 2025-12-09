@@ -6,7 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-// --- Request Models ---
+// Request Models
 data class GeminiRequest(
     val contents: List<List_Content>,
     val systemInstruction: SystemInstruction? = null,
@@ -30,7 +30,7 @@ data class GenerationConfig(
     val temperature: Float = 0.7f
 )
 
-// --- Response Models ---
+// Response Models
 data class GeminiResponse(
     val candidates: List<Candidate>?
 )
@@ -45,7 +45,7 @@ data class ContentResponse(
     val role: String?
 )
 
-// --- Retrofit Service ---
+// Retrofit Service
 interface GeminiApiService {
     @POST("v1/models/gemini-pro:generateContent")
     suspend fun generateContent(
@@ -54,7 +54,7 @@ interface GeminiApiService {
     ): GeminiResponse
 }
 
-// --- Singleton Client ---
+// Singleton Client
 object GeminiApiClient {
     private const val BASE_URL = "https://generativelanguage.googleapis.com/"
 

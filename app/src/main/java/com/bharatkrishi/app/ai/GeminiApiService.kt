@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface GeminiApiService {
 
-    @POST("v1beta/models/gemini-flash-latest:generateContent")
+    @POST("v1beta/models/gemini-2.0-flash:generateContent")
     suspend fun generateContent(
         @Body request: GeminiGenerateContentRequest,
         @Query("key") apiKey: String

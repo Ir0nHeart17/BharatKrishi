@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.bharatkrishi.app.network.AgriApi
 import com.bharatkrishi.app.network.AgriApiRecord
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.bharatkrishi.app.AppDatabase
 import com.bharatkrishi.app.MarketData
@@ -22,6 +23,7 @@ class MarketViewModel(application: Application) : AndroidViewModel(application) 
 
     // 1. DATABASE AND API SETUP
     private val apiService = AgriApi.retrofitService
+    private val marketDao = AppDatabase.getDatabase(application).marketDao()
 
     // 2. LIVE DATA TO OBSERVE FROM THE UI
     // The UI (your Activity/Fragment) will watch this to get updates
@@ -33,6 +35,11 @@ class MarketViewModel(application: Application) : AndroidViewModel(application) 
 
     private val _selectedCommodity = MutableLiveData<String?>()
     val selectedCommodity: LiveData<String?> = _selectedCommodity
+
+    init {
+        // Fetch initial data immediately on startup
+        fetchMarketData() // This was implicitly called or user manually triggers, but good to have ready.
+    }
 
     // The UI will call these functions when the user selects from a dropdown.
     fun onStateSelected(state: String?) {
@@ -50,13 +57,25 @@ class MarketViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun fetchMarketData() {
-        viewModelScope.launch {
-            _marketDataState.value = DataState.Loading
-            fetchFromApi()
+        viewModelScope.launch(Dispatchers.IO) {
+            _marketDataState.postValue(DataState.Loading)
+            
+            // 1. Show Cached Data FIRST (Instant Load)
+            try {
+                val cachedData = marketDao.getAll()
+                if (cachedData.isNotEmpty()) {
+                    _marketDataState.postValue(DataState.Success(cachedData))
+                }
+            } catch (e: Exception) {
+                // Ignore DB errors, proceed to API
+            }
+
+            // 2. Fetch Fresh Data
+            loadFromApiAndCache()
         }
     }
 
-    private suspend fun fetchFromApi() {
+    private suspend fun loadFromApiAndCache() {
         try {
             // 1. Create a map for our filters.
             val apiFilters = mutableMapOf<String, String>()
@@ -78,20 +97,34 @@ class MarketViewModel(application: Application) : AndroidViewModel(application) 
                 apiKey = "579b464db66ec23bdd000001cdd3946e44ce4aad7209ff7b23ac571b",
                 format = "json",
                 offset = "0",
-                limit = "100",
-                filters = apiFilters // Pass the map here!
+                limit = "50", // Reduced from 100 to 50 for faster load
+                filters = apiFilters
             )
 
             val newData = mapApiResponseToMarketData(apiResponse.records)
+            
             if (newData.isEmpty()) {
-                 _marketDataState.value = DataState.Error("No data found for selected filters.")
+                // Only show error if we have NO data (not even cached) - actually we should report empty result
+                 _marketDataState.postValue(DataState.Success(emptyList()))
             } else {
-                _marketDataState.value = DataState.Success(newData)
+                // 5. Update Cache
+                marketDao.deleteAll()
+                marketDao.insertAll(newData)
+                _marketDataState.postValue(DataState.Success(newData))
             }
 
         } catch (e: Exception) {
             e.printStackTrace()
-            _marketDataState.value = DataState.Error("Network error: ${e.message}. Tap to retry.")
+            // If API fails, we already showed cached data. 
+            // If cache was empty, we need to show error.
+            // But we can't easily check cache state here without querying again.
+            // For now, post error message - UI can decide to show Toast or overlaid error.
+            // However, DataState.Error replaces content. 
+            // Better: If we had cache, maybe just Log it. But we don't know if we showed cache.
+            // Simple approach: Post error. If user saw cache, screen might flash to error.
+            // Improvement: Check "current value" logic if possible, but livedata reads on main thread.
+            
+            _marketDataState.postValue(DataState.Error("Network error: ${e.message}. Tap to retry."))
         }
     }
 

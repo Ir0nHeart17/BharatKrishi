@@ -15,70 +15,83 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bharatkrishi.app.utils.LocalizationManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FertilizerAdvisoryScreen(navController: NavController) {
     val fertilizerRecommendations = listOf(
         FertilizerRecommendation(
-            cropName = "Wheat",
-            stage = "Sowing (Basal)",
-            fertilizer = "DAP + MOP",
+            cropName = LocalizationManager.get("Wheat"),
+            stage = LocalizationManager.get("Sowing (Basal)"),
+            fertilizer = LocalizationManager.get("DAP + MOP"),
             quantity = "55kg DAP + 40kg MOP / acre",
-            timing = "At time of sowing",
-            description = "Provides essential Phosphorus and Potassium. Potassium helps resist Rust diseases."
+            timing = LocalizationManager.get("At time of sowing"),
+            description = LocalizationManager.get("Provides essential Phosphorus and Potassium. Potassium helps resist Rust diseases.")
         ),
         FertilizerRecommendation(
-            cropName = "Wheat",
-            stage = "CRI Stage (20-25 DAS)",
-            fertilizer = "Urea",
+            cropName = LocalizationManager.get("Wheat"),
+            stage = LocalizationManager.get("CRI Stage (20-25 DAS)"),
+            fertilizer = LocalizationManager.get("Urea"),
             quantity = "45-50 kg / acre",
-            timing = "With first irrigation",
-            description = "Crucial for tillering. Avoid excess Nitrogen to prevent Rust susceptibility."
+            timing = LocalizationManager.get("With first irrigation"),
+            description = LocalizationManager.get("Crucial for tillering. Avoid excess Nitrogen to prevent Rust susceptibility.")
         ),
         FertilizerRecommendation(
-            cropName = "Wheat",
-            stage = "Jointing Stage (40-45 DAS)",
-            fertilizer = "Urea",
+            cropName = LocalizationManager.get("Wheat"),
+            stage = LocalizationManager.get("Jointing Stage (40-45 DAS)"),
+            fertilizer = LocalizationManager.get("Urea"),
             quantity = "45-50 kg / acre",
-            timing = "With second irrigation",
-            description = "Supports stem elongation. Balanced nutrition reduces Mildew risk."
+            timing = LocalizationManager.get("With second irrigation"),
+            description = LocalizationManager.get("Supports stem elongation. Balanced nutrition reduces Mildew risk.")
         ),
         FertilizerRecommendation(
-            cropName = "Wheat",
-            stage = "Booting Stage",
-            fertilizer = "Zinc Sulphate (if deficiency)",
+            cropName = LocalizationManager.get("Wheat"),
+            stage = LocalizationManager.get("Booting Stage"),
+            fertilizer = LocalizationManager.get("Zinc Sulphate (if deficiency)"),
             quantity = "10 kg / acre (soil application)",
-            timing = "If leaves show yellowing",
-            description = "Corrects Zinc deficiency. Healthy plants resist Septoria better."
+            timing = LocalizationManager.get("If leaves show yellowing"),
+            description = LocalizationManager.get("Corrects Zinc deficiency. Healthy plants resist Septoria better.")
         ),
         FertilizerRecommendation(
-            cropName = "Mustard",
-            stage = "Sowing",
-            fertilizer = "SSP + Urea",
+            cropName = LocalizationManager.get("Mustard"),
+            stage = LocalizationManager.get("Sowing"),
+            fertilizer = LocalizationManager.get("SSP + Urea"),
             quantity = "150kg SSP + 30kg Urea / acre",
-            timing = "Basal application",
-            description = "Sulphur in SSP is vital for oil content and disease resistance."
+            timing = LocalizationManager.get("Basal application"),
+            description = LocalizationManager.get("Sulphur in SSP is vital for oil content and disease resistance.")
         )
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        TopAppBar(
-            title = { Text("Fertilizer Advisory", fontWeight = FontWeight.Bold) },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-        )
-
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        LocalizationManager.get("Fertilizer Advisory"), 
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ) 
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(fertilizerRecommendations) { recommendation ->
@@ -92,7 +105,7 @@ fun FertilizerAdvisoryScreen(navController: NavController) {
 fun FertilizerCard(recommendation: FertilizerRecommendation) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -103,29 +116,30 @@ fun FertilizerCard(recommendation: FertilizerRecommendation) {
                 Text(
                     recommendation.cropName,
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 AssistChip(
                     onClick = { },
-                    label = { Text(recommendation.stage, fontSize = 12.sp) },
+                    label = { Text(recommendation.stage, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface) },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = Color(0xFF2E7D32).copy(alpha = 0.1f)
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                     )
                 )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            FertilizerDetailRow("Fertilizer", recommendation.fertilizer, Icons.Default.Science)
-            FertilizerDetailRow("Quantity", recommendation.quantity, Icons.Default.Scale)
-            FertilizerDetailRow("Timing", recommendation.timing, Icons.Default.Schedule)
+            FertilizerDetailRow(LocalizationManager.get("Fertilizer"), recommendation.fertilizer, Icons.Default.Science)
+            FertilizerDetailRow(LocalizationManager.get("Quantity"), recommendation.quantity, Icons.Default.Scale)
+            FertilizerDetailRow(LocalizationManager.get("Timing"), recommendation.timing, Icons.Default.Schedule)
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 recommendation.description,
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -140,7 +154,7 @@ fun FertilizerDetailRow(label: String, value: String, icon: androidx.compose.ui.
         Icon(
             icon,
             contentDescription = label,
-            tint = Color(0xFF2E7D32),
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(16.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -148,12 +162,13 @@ fun FertilizerDetailRow(label: String, value: String, icon: androidx.compose.ui.
             "$label: ",
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
         )
         Text(
             value,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

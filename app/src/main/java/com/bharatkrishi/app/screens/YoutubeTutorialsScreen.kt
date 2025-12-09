@@ -18,34 +18,47 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bharatkrishi.app.utils.LocalizationManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun YoutubeTutorialsScreen(navController: NavController) {
     val tutorials = listOf(
-        YoutubeTutorial("How to Improve Soil Fertility", "10:45"),
-        YoutubeTutorial("Pest Management in Cotton", "8:30"),
-        YoutubeTutorial("Best Irrigation Techniques", "12:15"),
-        YoutubeTutorial("Market Price Updates", "5:20")
+        YoutubeTutorial(LocalizationManager.get("How to Improve Soil Fertility"), "10:45"),
+        YoutubeTutorial(LocalizationManager.get("Pest Management in Cotton"), "8:30"),
+        YoutubeTutorial(LocalizationManager.get("Best Irrigation Techniques"), "12:15"),
+        YoutubeTutorial(LocalizationManager.get("Market Price Updates"), "5:20")
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        TopAppBar(
-            title = { Text("YouTube Tutorials", fontWeight = FontWeight.Bold) },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-        )
-
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        LocalizationManager.get("YouTube Tutorials"), 
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ) 
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(tutorials) { tutorial ->
@@ -59,7 +72,7 @@ fun YoutubeTutorialsScreen(navController: NavController) {
 fun YoutubeTutorialCard(tutorial: YoutubeTutorial) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -83,8 +96,17 @@ fun YoutubeTutorialCard(tutorial: YoutubeTutorial) {
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(tutorial.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text("Duration: ${tutorial.duration}", color = Color.Gray, fontSize = 14.sp)
+                Text(
+                    tutorial.title, 
+                    fontWeight = FontWeight.Bold, 
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    "${LocalizationManager.get("Duration:")} ${tutorial.duration}", 
+                    color = MaterialTheme.colorScheme.onSurfaceVariant, 
+                    fontSize = 14.sp
+                )
             }
         }
     }

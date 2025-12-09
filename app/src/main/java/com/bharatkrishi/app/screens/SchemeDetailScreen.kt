@@ -1,27 +1,30 @@
 package com.bharatkrishi.app.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bharatkrishi.app.utils.LocalizationManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommunityForumScreen(navController: NavController) {
+fun SchemeDetailScreen(
+    navController: NavController,
+    schemeTitle: String?,
+    schemeDescription: String?
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { 
                     Text(
-                        LocalizationManager.get("Community Forum"), 
+                        text = LocalizationManager.get("Scheme Details"),
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     ) 
@@ -36,21 +39,19 @@ fun CommunityForumScreen(navController: NavController) {
                 )
             )
         },
-        bottomBar = {
-            BottomNavigationBar(navController)
-        },
         containerColor = MaterialTheme.colorScheme.background
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues).padding(16.dp)) {
             Text(
-                LocalizationManager.get("Community Forum Coming Soon!"), 
-                fontSize = 22.sp,
+                text = schemeTitle ?: LocalizationManager.get("Unknown Scheme"),
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Divider(modifier = Modifier.padding(vertical = 16.dp), color = MaterialTheme.colorScheme.outlineVariant)
+            Text(
+                text = schemeDescription ?: LocalizationManager.get("No details available."),
+                style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }

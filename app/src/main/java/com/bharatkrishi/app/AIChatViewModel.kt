@@ -17,13 +17,18 @@ class AIChatViewModel : ViewModel() {
     // Simple manual DI
     private val repository = GeminiRepository(GeminiApiClient.api)
 
-    fun sendMessage(text: String) {
-        val userMessage = ChatMessage(text, true, "Now")
+    fun sendMessage(text: String, image: android.graphics.Bitmap? = null) {
+        val displayMessage = if (text.isBlank() && image != null) "Sent an image for analysis" else text
+        
+        val userMessage = ChatMessage(displayMessage, true, "Now", image)
         _messages.value = _messages.value + userMessage
 
         viewModelScope.launch {
             try {
-                val reply = repository.sendMessage(text)
+                // If text is empty but image is present, add a default prompt for the API
+                val apiText = if (text.isBlank() && image != null) "Analyze this image efficiently check for diseases and provide remedies" else text
+                
+                val reply = repository.sendMessage(apiText, image)
 
                 val aiMessage = ChatMessage(
                     text = reply,
@@ -32,12 +37,16 @@ class AIChatViewModel : ViewModel() {
                 )
 
                 _messages.value = _messages.value + aiMessage
-            } catch (e: Exception) {
-                val errorMessage = ChatMessage(
-                    text = "Error: ${e.message}",
-                    isFromUser = false,
-                    timestamp = "Now"
-                )
+            } catch (e: Throwable) {
+                e.printStackTrace()
+                val errorText = when {
+                    e is retrofit2.HttpException -> "Server Error (${e.code()}): ${e.message()}"
+                    e is java.io.IOException -> "Network Error: Please check your connection."
+                    e is OutOfMemoryError -> "Error: Image too large (Out of Memory)."
+                    else -> "Error: ${e.localizedMessage ?: "Unknown error"}"
+                }
+                
+                val errorMessage = ChatMessage(errorText, false, "Now")
                 _messages.value = _messages.value + errorMessage
             }
         }
@@ -47,5 +56,6 @@ class AIChatViewModel : ViewModel() {
 data class ChatMessage(
     val text: String,
     val isFromUser: Boolean,
-    val timestamp: String
+    val timestamp: String,
+    val image: android.graphics.Bitmap? = null
 )

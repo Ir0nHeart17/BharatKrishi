@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bharatkrishi.app.utils.LocalizationManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,8 +28,8 @@ fun NotificationsScreen(navController: NavController) {
     val notifications = listOf(
         NotificationItem(
             id = 1,
-            title = "Weather Alert",
-            message = "Heavy rain expected in 2 days. Cover your crops!",
+            title = LocalizationManager.get("Weather Alert"),
+            message = LocalizationManager.get("Heavy rain expected in 2 days. Cover your crops!"),
             time = "2 hours ago",
             icon = Icons.Default.Warning,
             iconColor = Color(0xFFFF9800),
@@ -36,8 +37,8 @@ fun NotificationsScreen(navController: NavController) {
         ),
         NotificationItem(
             id = 2,
-            title = "Pest Identified",
-            message = "Aphids detected on tomatoes. Immediate action required.",
+            title = LocalizationManager.get("Pest Identified"),
+            message = LocalizationManager.get("Aphids detected on tomatoes. Immediate action required."),
             time = "5 hours ago",
             icon = Icons.Default.BugReport,
             iconColor = Color(0xFFf44336),
@@ -45,8 +46,8 @@ fun NotificationsScreen(navController: NavController) {
         ),
         NotificationItem(
             id = 3,
-            title = "Market Price Update",
-            message = "Wheat prices increased by 2.4% today",
+            title = LocalizationManager.get("Market Price Update"),
+            message = LocalizationManager.get("Wheat prices increased by 2.4% today"),
             time = "1 day ago",
             icon = Icons.Default.TrendingUp,
             iconColor = Color(0xFF4CAF50),
@@ -54,8 +55,8 @@ fun NotificationsScreen(navController: NavController) {
         ),
         NotificationItem(
             id = 4,
-            title = "Fertilizer Reminder",
-            message = "Time to apply nitrogen fertilizer to your wheat crop",
+            title = LocalizationManager.get("Fertilizer Reminder"),
+            message = LocalizationManager.get("Time to apply nitrogen fertilizer to your wheat crop"),
             time = "2 days ago",
             icon = Icons.Default.Grass,
             iconColor = Color(0xFF2196F3),
@@ -63,8 +64,8 @@ fun NotificationsScreen(navController: NavController) {
         ),
         NotificationItem(
             id = 5,
-            title = "Soil Test Results",
-            message = "Your soil test results are ready. pH level: 6.5",
+            title = LocalizationManager.get("Soil Test Results"),
+            message = LocalizationManager.get("Your soil test results are ready. pH level: 6.5"),
             time = "3 days ago",
             icon = Icons.Default.Science,
             iconColor = Color(0xFF9C27B0),
@@ -72,8 +73,8 @@ fun NotificationsScreen(navController: NavController) {
         ),
         NotificationItem(
             id = 6,
-            title = "New Tutorial Available",
-            message = "Learn about organic farming techniques",
+            title = LocalizationManager.get("New Tutorial Available"),
+            message = LocalizationManager.get("Learn about organic farming techniques"),
             time = "1 week ago",
             icon = Icons.Default.PlayCircle,
             iconColor = Color(0xFF607D8B),
@@ -81,83 +82,92 @@ fun NotificationsScreen(navController: NavController) {
         )
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        // Top App Bar
-        TopAppBar(
-            title = {
-                Text(
-                    "Notifications",
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            },
-            actions = {
-                TextButton(onClick = { /* Mark all as read */ }) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
                     Text(
-                        "Mark all read",
-                        color = Color(0xFF2E7D32),
-                        fontWeight = FontWeight.Medium
+                        LocalizationManager.get("Notifications"),
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
                     )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
+                    }
+                },
+                actions = {
+                    TextButton(onClick = { /* Mark all as read */ }) {
+                        Text(
+                            LocalizationManager.get("Mark all read"),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
             )
-        )
-
-        // Notification stats
-        Card(
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E8))
+                .padding(innerPadding)
+                .fillMaxSize()
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Notification stats
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
-                Icon(
-                    Icons.Default.Notifications,
-                    contentDescription = "Notifications",
-                    tint = Color(0xFF2E7D32),
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        "${notifications.count { !it.isRead }} unread notifications",
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Notifications,
+                        contentDescription = "Notifications",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Text(
-                        "Stay updated with important farm alerts",
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            "${notifications.count { !it.isRead }} ${LocalizationManager.get("unread notifications")}",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            LocalizationManager.get("Stay updated with important farm alerts"),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        )
+                    }
                 }
             }
-        }
 
-        // Notifications List
-        LazyColumn(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(notifications) { notification ->
-                NotificationCard(notification = notification)
-            }
+            // Notifications List
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(notifications) { notification ->
+                    NotificationCard(notification = notification)
+                }
 
-            // Add bottom padding
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
+                // Add bottom padding
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
     }
@@ -168,7 +178,7 @@ fun NotificationCard(notification: NotificationItem) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (notification.isRead) Color.White else Color(0xFFF3E5F5)
+            containerColor = if (notification.isRead) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -206,6 +216,7 @@ fun NotificationCard(notification: NotificationItem) {
                         notification.title,
                         fontWeight = if (notification.isRead) FontWeight.Medium else FontWeight.Bold,
                         fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.weight(1f)
                     )
 
@@ -214,7 +225,7 @@ fun NotificationCard(notification: NotificationItem) {
                             modifier = Modifier
                                 .size(8.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFF2196F3))
+                                .background(MaterialTheme.colorScheme.primary)
                         )
                     }
                 }
@@ -224,7 +235,7 @@ fun NotificationCard(notification: NotificationItem) {
                 Text(
                     notification.message,
                     fontSize = 14.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 20.sp
                 )
 
@@ -233,7 +244,7 @@ fun NotificationCard(notification: NotificationItem) {
                 Text(
                     notification.time,
                     fontSize = 12.sp,
-                    color = Color(0xFF666666)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
             }
         }

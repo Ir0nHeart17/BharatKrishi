@@ -18,68 +18,83 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.bharatkrishi.app.utils.LocalizationManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CropAdvisoryScreen(navController: NavController) {
     val cropRecommendations = listOf(
         CropRecommendation(
-            name = "Wheat",
-            suitability = "Excellent for winter season",
-            marketInfo = "High demand, good price",
+            name = LocalizationManager.get("Wheat"),
+            suitability = LocalizationManager.get("Excellent for winter season"),
+            marketInfo = LocalizationManager.get("High demand, good price"),
             color = Color(0xFF4CAF50),
-            season = "Rabi Season"
+            season = LocalizationManager.get("Rabi Season")
         ),
         CropRecommendation(
-            name = "Cotton",
-            suitability = "Suitable for your soil type",
-            marketInfo = "Premium variety available",
+            name = LocalizationManager.get("Cotton"),
+            suitability = LocalizationManager.get("Suitable for your soil type"),
+            marketInfo = LocalizationManager.get("Premium variety available"),
             color = Color(0xFF2196F3),
-            season = "Kharif Season"
+            season = LocalizationManager.get("Kharif Season")
         ),
         CropRecommendation(
-            name = "Sugarcane",
-            suitability = "Good irrigation available",
-            marketInfo = "Processing unit nearby",
+            name = LocalizationManager.get("Sugarcane"),
+            suitability = LocalizationManager.get("Good irrigation available"),
+            marketInfo = LocalizationManager.get("Processing unit nearby"),
             color = Color(0xFFFF9800),
-            season = "Year Round"
+            season = LocalizationManager.get("Year Round")
         )
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
-    ) {
-        TopAppBar(
-            title = { Text("Crop Advisory", fontWeight = FontWeight.Bold) },
-            navigationIcon = {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
-        )
-
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { 
+                    Text(
+                        LocalizationManager.get("Crop Advisory"), 
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    ) 
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
+        },
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
         LazyColumn(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF1976D2))
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary) 
+                    // Keeping primary here as it works as a header block, or could use SurfaceVariant like Profile. 
+                    // Let's use Primary (Orange) to mimic Home's "Welcome" card style for consistency.
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Text(
-                            "Crop Recommendations",
-                            color = Color.White,
+                            LocalizationManager.get("Crop Recommendations"),
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            "Based on your farm history, soil type, and market trends",
-                            color = Color.White.copy(alpha = 0.9f),
+                            LocalizationManager.get("Based on your farm history, soil type, and market trends"),
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.9f),
                             fontSize = 14.sp
                         )
                     }
@@ -97,7 +112,7 @@ fun CropAdvisoryScreen(navController: NavController) {
 fun CropRecommendationCard(crop: CropRecommendation) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface) // White/DarkSurface
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -128,11 +143,12 @@ fun CropRecommendationCard(crop: CropRecommendation) {
                     Text(
                         crop.name,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     AssistChip(
                         onClick = { },
-                        label = { Text(crop.season, fontSize = 10.sp) },
+                        label = { Text(crop.season, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurface) },
                         colors = AssistChipDefaults.assistChipColors(
                             containerColor = crop.color.copy(alpha = 0.2f)
                         )
@@ -142,14 +158,14 @@ fun CropRecommendationCard(crop: CropRecommendation) {
                 Text(
                     crop.suitability,
                     fontSize = 14.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
 
                 Text(
                     crop.marketInfo,
                     fontSize = 12.sp,
-                    color = crop.color,
+                    color = crop.color, // Keep semantic color for emphasis
                     fontWeight = FontWeight.Medium
                 )
             }
