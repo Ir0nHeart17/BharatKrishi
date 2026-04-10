@@ -87,7 +87,7 @@ BharatKrishi/
 | Name | Role |
 | :--- | :--- |
 | **Aditya Sharma** | Team Leader & Backend/ML Integration |
-| **Adarsh Mishra** | Kotlin & Core Android Development |
+| **Adarsh Mishra** | Kotlin & App Android Development |
 | **Piyush Tiwari** | Kotlin & App Development Support |
 | **Parmanshu Singh Patel** | Full-Stack Support & Feature Implementation |
 
