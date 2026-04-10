@@ -82,7 +82,14 @@ BharatKrishi/
 **Phase 2** 🚧 Spring Boot backend, Firebase integration, TFLite wheat disease models  
 **Phase 3** 📋 Weather/Mandi APIs, voice AI, government scheme integration  
 **Phase 4** 🔮 Advanced analytics, IoT sensors, blockchain supply chain tracking
-## Team name - Cartel Coders
-Aditya Sharma (Leader)
+## 👥 Team: Cartel Coders
+
+| Name | Role |
+| :--- | :--- |
+| **Aditya Sharma** | Team Leader & Backend/ML Integration |
+| **Adarsh Mishra** | Kotlin & Core Android Development |
+| **Piyush Tiwari** | Kotlin & App Development Support |
+| **Parmanshu Singh Patel** | Full-Stack Support & Feature Implementation |
+
 ---
 **Made for SIH 2025 | Empowering India's Farmers with AI Technology for Wheat Disease Detection**
